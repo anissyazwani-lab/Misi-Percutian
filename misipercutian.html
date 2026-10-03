@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jom Cerita! – Kenangan Indah Semasa Bercuti</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Trebuchet MS",Arial,sans-serif;background:linear-gradient(135deg,#fff1f7,#eef8ff);color:#49384a}
+.container{max-width:980px;margin:auto;padding:24px}
+header{background:linear-gradient(135deg,#f7a8c4,#a9d8f5);border-radius:28px;padding:28px;text-align:center;box-shadow:0 10px 25px #0001}
+h1{margin:0 0 8px;font-size:clamp(28px,5vw,46px)}
+.subtitle{font-size:18px}
+.nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:20px 0}
+button{border:0;border-radius:16px;padding:12px 18px;font-size:16px;font-weight:bold;cursor:pointer;background:#fff;box-shadow:0 4px 10px #0002}
+button:hover{transform:translateY(-1px)}
+.primary{background:#ef78a8;color:white}.blue{background:#79bde8;color:white}.green{background:#8ccfa7;color:white}
+.card{background:#fff;border-radius:24px;padding:24px;margin:18px 0;box-shadow:0 8px 22px #0001}
+.hidden{display:none}
+.story{line-height:1.8;font-size:18px;background:#fff8fb;padding:18px;border-radius:18px}
+.progress{height:12px;background:#eee;border-radius:20px;overflow:hidden;margin:15px 0}.bar{height:100%;width:0;background:#ef78a8;transition:.3s}
+.question{font-size:21px;font-weight:bold;margin:18px 0}
+.feedback{font-weight:bold;min-height:28px;margin-top:12px}
+.score{font-size:22px;font-weight:bold}
+.pictures{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pic{min-height:145px;border-radius:20px;padding:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#f9dbe8;font-size:18px;font-weight:bold}
+.pic:nth-child(2){background:#d9effc}.pic:nth-child(3){background:#e1f4e7}.pic:nth-child(4){background:#fff0c9}
+textarea{width:100%;min-height:130px;border:2px solid #e8c6d6;border-radius:16px;padding:14px;font-size:16px;resize:vertical}
+.mic{font-size:18px}
+.tip{font-size:14px;color:#725e70}
+footer{text-align:center;padding:18px;color:#725e70}
+@media(max-width:650px){.pictures{grid-template-columns:1fr 1fr}.container{padding:14px}.card{padding:18px}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <div style="font-size:45px">🌴✈️🧳</div>
+  <h1>🎤 Jom Cerita!</h1>
+  <div class="subtitle">Kenangan Indah Semasa Bercuti</div>
+  <p>Bahasa Melayu Tahun 4 • Kemahiran Mendengar dan Bertutur</p>
+</header>
+
+<div class="nav">
+  <button onclick="showSection('home')">🏠 Mula</button>
+  <button onclick="showSection('listen')">🎧 Dengar</button>
+  <button onclick="showSection('quiz')">🎤 Jawab</button>
+  <button onclick="showSection('storytelling')">🗣️ Bercerita</button>
+</div>
+
+<section id="home" class="card">
+  <h2>🌟 Selamat Datang!</h2>
+  <p>Lengkapkan tiga misi untuk mengumpul bintang:</p>
+  <ol>
+    <li>🎧 Dengar cerita tentang pengalaman bercuti.</li>
+    <li>🎤 Jawab soalan menggunakan suara atau teks.</li>
+    <li>🗣️ Ceritakan pengalaman berdasarkan gambar.</li>
+  </ol>
+  <button class="primary" onclick="showSection('listen')">🚀 Mula Misi</button>
+</section>
+
+<section id="listen" class="card hidden">
+  <h2>🎧 Misi 1: Dengar Cerita</h2>
+  <div class="story" id="storyText">
+    Pada cuti sekolah yang lalu, Aina dan keluarganya pergi bercuti ke Pulau Langkawi.
+    Mereka menaiki feri pada waktu pagi. Setibanya di sana, Aina melihat pemandangan yang
+    indah. Dia bermain di pantai, mengambil gambar dan menikmati masa bersama keluarganya.
+    Aina berasa sangat gembira kerana dapat meluangkan masa bersama keluarga.
+  </div>
+  <br>
+  <button class="primary" onclick="speakStory()">🔊 Dengar Cerita</button>
+  <button onclick="stopSpeech()">⏹️ Berhenti</button>
+  <p class="tip">Tip: Gunakan pembesar suara atau fon kepala.</p>
+  <button class="blue" onclick="showSection('quiz')">➡️ Ke Misi 2</button>
+</section>
+
+<section id="quiz" class="card hidden">
+  <h2>🎤 Misi 2: Dengar & Jawab</h2>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="score">⭐ Skor: <span id="score">0</span>/4</div>
+  <div class="question" id="question"></div>
+  <button class="blue" onclick="speakQuestion()">🔊 Dengar Soalan</button>
+  <button class="primary mic" onclick="startRecognition()">🎤 Jawab dengan Suara</button>
+  <input id="textAnswer" type="text" placeholder="Atau taip jawapan di sini..." style="width:100%;padding:14px;margin-top:14px;border:2px solid #e8c6d6;border-radius:14px;font-size:16px">
+  <br><br>
+  <button class="green" onclick="checkTyped()">✅ Semak Jawapan</button>
+  <div class="feedback" id="feedback"></div>
+  <button id="nextBtn" class="blue hidden" onclick="nextQuestion()">➡️ Soalan Seterusnya</button>
+</section>
+
+<section id="storytelling" class="card hidden">
+  <h2>🗣️ Misi 3: Jom Bercerita!</h2>
+  <p><b>Arahan:</b> Ceritakan pengalaman Aina semasa bercuti berdasarkan gambar di bawah.</p>
+  <div class="pictures">
+    <div class="pic">🚢<br>Naik feri<br><small>Waktu pagi</small></div>
+    <div class="pic">🏝️<br>Sampai di pulau<br><small>Pemandangan indah</small></div>
+    <div class="pic">🏖️<br>Bermain di pantai<br><small>Ambil gambar</small></div>
+    <div class="pic">👨‍👩‍👧‍👦<br>Bersama keluarga<br><small>Berasa gembira</small></div>
+  </div>
+  <br>
+  <button class="primary mic" onclick="startStoryRecognition()">🎤 Mula Bercerita</button>
+  <button onclick="stopRecognition()">⏹️ Berhenti</button>
+  <button class="blue" onclick="speakPrompt()">🔊 Dengar Arahan</button>
+  <br><br>
+  <textarea id="transcript" placeholder="Transkripsi suara murid akan muncul di sini..."></textarea>
+  <p id="storyFeedback" class="feedback"></p>
+  <button class="green" onclick="evaluateStory()">⭐ Semak Cerita</button>
+</section>
+
+<footer>🌸 Teruskan berlatih! Mendengar dengan teliti dan bertutur dengan yakin.</footer>
+</div>
+
+<script>
+const story = `Pada cuti sekolah yang lalu, Aina dan keluarganya pergi bercuti ke Pulau Langkawi. Mereka menaiki feri pada waktu pagi. Setibanya di sana, Aina melihat pemandangan yang indah. Dia bermain di pantai, mengambil gambar dan menikmati masa bersama keluarganya. Aina berasa sangat gembira kerana dapat meluangkan masa bersama keluarga.`;
+
+const questions = [
+ {q:"Ke manakah Aina pergi bercuti?", keys:["langkawi","pulau langkawi"]},
+ {q:"Dengan siapakah Aina pergi bercuti?", keys:["keluarga","keluarganya"]},
+ {q:"Apakah aktiviti yang dilakukan oleh Aina?", keys:["bermain di pantai","ambil gambar","mengambil gambar","bermain","pantai"]},
+ {q:"Bagaimanakah perasaan Aina semasa bercuti?", keys:["gembira","sangat gembira"]}
+];
+let current=0, score=0, recognition=null;
+
+function showSection(id){
+ document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+ if(id==="quiz") loadQuestion();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function speak(text){
+ if(!("speechSynthesis" in window)){alert("Pelayar anda tidak menyokong fungsi suara.");return;}
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(text);
+ u.lang="ms-MY"; u.rate=.9;
+ speechSynthesis.speak(u);
+}
+function speakStory(){speak(story)}
+function speakQuestion(){speak(questions[current].q)}
+function speakPrompt(){speak("Ceritakan pengalaman Aina semasa bercuti berdasarkan gambar yang diberikan. Gunakan ayat yang lengkap dan sebutkan aktiviti yang dilakukan.")}
+function stopSpeech(){if("speechSynthesis" in window)speechSynthesis.cancel()}
+
+function loadQuestion(){
+ const item=questions[current];
+ document.getElementById("question").textContent=`${current+1}. ${item.q}`;
+ document.getElementById("bar").style.width=((current)/questions.length*100)+"%";
+ document.getElementById("feedback").textContent="";
+ document.getElementById("nextBtn").classList.add("hidden");
+ document.getElementById("textAnswer").value="";
+}
+function normalize(s){return s.toLowerCase().replace(/[.,!?]/g,"").trim()}
+function checkAnswer(answer){
+ const clean=normalize(answer);
+ const ok=questions[current].keys.some(k=>clean.includes(normalize(k)));
+ const f=document.getElementById("feedback");
+ if(ok){
+   score++; document.getElementById("score").textContent=score;
+   f.textContent="🎉 Betul! Jawapan kamu tepat.";
+ }else{
+   f.textContent="😊 Cuba lagi. Dengar semula soalan dan fikirkan jawapannya.";
+ }
+ document.getElementById("nextBtn").classList.remove("hidden");
+}
+function checkTyped(){
+ const a=document.getElementById("textAnswer").value;
+ if(!a){document.getElementById("feedback").textContent="Sila masukkan jawapan dahulu.";return}
+ checkAnswer(a);
+}
+function nextQuestion(){
+ if(current<questions.length-1){current++;loadQuestion()}
+ else{
+   document.getElementById("bar").style.width="100%";
+   document.getElementById("question").textContent="🏆 Tahniah! Misi 2 selesai.";
+   document.getElementById("feedback").textContent=`Kamu mendapat ${score}/4 bintang ⭐`;
+   document.getElementById("nextBtn").textContent="➡️ Ke Misi 3";
+   document.getElementById("nextBtn").onclick=()=>showSection("storytelling");
+ }
+}
+
+function createRecognition(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){alert("Pelayar ini tidak menyokong pengecaman suara. Cuba Google Chrome dan benarkan akses mikrofon.");return null}
+ const r=new SR(); r.lang="ms-MY"; r.interimResults=true; r.continuous=false;
+ r.onresult=e=>{
+   let text="";
+   for(let i=e.resultIndex;i<e.results.length;i++) text+=e.results[i][0].transcript;
+   return text;
+ };
+ return r;
+}
+function startRecognition(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){alert("Pengecaman suara tidak disokong. Cuba Google Chrome.");return}
+ recognition=new SR(); recognition.lang="ms-MY"; recognition.interimResults=false; recognition.continuous=false;
+ recognition.onresult=e=>{const text=e.results[0][0].transcript;document.getElementById("textAnswer").value=text;checkAnswer(text)}
+ recognition.onerror=e=>alert("Mikrofon tidak dapat digunakan. Pastikan kebenaran mikrofon telah diberikan.");
+ recognition.start();
+}
+function startStoryRecognition(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){alert("Pengecaman suara tidak disokong. Cuba Google Chrome.");return}
+ recognition=new SR(); recognition.lang="ms-MY"; recognition.interimResults=false; recognition.continuous=true;
+ recognition.onresult=e=>{
+   let text="";
+   for(let i=e.resultIndex;i<e.results.length;i++) text+=e.results[i][0].transcript+" ";
+   document.getElementById("transcript").value += text;
+ };
+ recognition.onerror=e=>alert("Mikrofon tidak dapat digunakan. Pastikan kebenaran mikrofon telah diberikan.");
+ recognition.start();
+}
+function stopRecognition(){if(recognition){recognition.stop();recognition=null}}
+function evaluateStory(){
+ const t=normalize(document.getElementById("transcript").value);
+ const keys=["bercuti","keluarga","langkawi","feri","pantai","gembira"];
+ const found=keys.filter(k=>t.includes(k));
+ const f=document.getElementById("storyFeedback");
+ if(found.length>=4) f.textContent=`🌟 Hebat! Kamu menggunakan ${found.length} kata kunci. Cerita kamu lengkap.`;
+ else if(found.length>=2) f.textContent=`👏 Bagus! Kamu menggunakan ${found.length} kata kunci. Cuba tambah lebih banyak maklumat.`;
+ else f.textContent="😊 Cuba lagi dengan menyebut tempat, keluarga, aktiviti dan perasaan.";
+}
+loadQuestion();
+</script>
+</body>
+</html>
